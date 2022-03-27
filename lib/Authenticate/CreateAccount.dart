@@ -52,5 +52,63 @@ class _CreateAccountState extends State<CreateAccount> {
                 ),
               ),
             ),
-           
-  
+            Container(
+              width: size.width / 1.1,
+              child: Text(
+                "Create Account to Contiue!",
+                style: TextStyle(
+                  color: Colors.grey[700],
+                  fontSize: 20,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+            SizedBox(
+              height: size.height / 20,
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 18.0),
+              child: Container(
+                width: size.width,
+                alignment: Alignment.center,
+                child: field(size, "Name", Icons.account_box, _name),
+              ),
+            ),
+            Container(
+              width: size.width,
+              alignment: Alignment.center,
+              child: field(size, "email", Icons.account_box, _email),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 18.0),
+              child: Container(
+                width: size.width,
+                alignment: Alignment.center,
+                child: field(size, "password", Icons.lock, _password),
+              ),
+            ),
+            SizedBox(
+              height: size.height / 20,
+            ),
+            customButton(size),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: GestureDetector(
+                onTap: () => Navigator.pop(context),
+                child: Text(
+                  "Login",
+                  style: TextStyle(
+                    color: Colors.blue,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+
