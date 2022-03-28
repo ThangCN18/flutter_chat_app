@@ -104,4 +104,49 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
+  Widget customButton(Size size) {
+    return GestureDetector(
+      onTap: () {
+        if (_email.text.isNotEmpty && _password.text.isNotEmpty) {
+          setState(() {
+            isLoading = true;
+          });
+
+          logIn(_email.text, _password.text).then((user) {
+            if (user != null) {
+              print("Login Sucessfull");
+              setState(() {
+                isLoading = false;
+              });
+              Navigator.push(
+                  context, MaterialPageRoute(builder: (_) => HomeScreen()));
+            } else {
+              print("Login Failed");
+              setState(() {
+                isLoading = false;
+              });
+            }
+          });
+        } else {
+          print("Please fill form correctly");
+        }
+      },
+      child: Container(
+          height: size.height / 14,
+          width: size.width / 1.2,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(5),
+            color: Colors.blue,
+          ),
+          alignment: Alignment.center,
+          child: Text(
+            "Login",
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          )),
+    );
+  }
 }  
