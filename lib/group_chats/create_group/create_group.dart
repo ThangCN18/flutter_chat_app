@@ -1,4 +1,6 @@
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_app/Screens/HomeScreen.dart';
 import 'package:uuid/uuid.dart';
@@ -12,53 +14,97 @@ class CreateGroup extends StatefulWidget {
   State<CreateGroup> createState() => _CreateGroupState();
 }
 
-class _AddMembersINGroupState extends State<AddMembersINGroup> {
-  final TextEditingController _search = TextEditingController();
+class _CreateGroupState extends State<CreateGroup> {
+  final TextEditingController _groupName = TextEditingController();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  Map<String, dynamic>? userMap;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   bool isLoading = false;
-  List membersList = [];
 
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    membersList = widget.membersList;
-  }
-
-  void onSearch() async {
+  void createGroup() async {
     setState(() {
       isLoading = true;
     });
 
-    await _firestore
-        .collection('users')
-        .where("email", isEqualTo: _search.text)
-        .get()
-        .then((value) {
-      setState(() {
-        userMap = value.docs[0].data();
-        isLoading = false;
+    String groupId = Uuid().v1();
+
+    await _firestore.collection('groups').doc(groupId).set({
+      "members": widget.membersList,
+      "id": groupId,
+    });
+
+    for (int i = 0; i < widget.membersList.length; i++) {
+      String uid = widget.membersList[i]['uid'];
+
+      await _firestore
+          .collection('users')
+          .doc(uid)
+          .collection('groups')
+          .doc(groupId)
+          .set({
+        "name": _groupName.text,
+        "id": groupId,
       });
-      print(userMap);
-    });
-  }
+    }
 
-  void onAddMembers() async {
-    membersList.add(userMap);
-
-    await _firestore.collection('groups').doc(widget.groupChatId).update({
-      "members": membersList,
+    await _firestore.collection('groups').doc(groupId).collection('chats').add({
+      "message": "${_auth.currentUser!.displayName} Created This Group.",
+      "type": "notify",
     });
 
-    await _firestore
-        .collection('users')
-        .doc(userMap!['uid'])
-        .collection('groups')
-        .doc(widget.groupChatId)
-        .set({"name": widget.name, "id": widget.groupChatId});
+    Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => HomeScreen()), (route) => false);
   }
 
-  
+  @override
+  Widget build(BuildContext context) {
+    final Size size = MediaQuery.of(context).size;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Group Name"),
+      ),
+      body: isLoading
+          ? Container(
+              height: size.height,
+              width: size.width,
+              alignment: Alignment.center,
+              child: CircularProgressIndicator(),
+            )
+          : Column(
+              children: [
+                SizedBox(
+                  height: size.height / 10,
+                ),
+                Container(
+                  height: size.height / 14,
+                  width: size.width,
+                  alignment: Alignment.center,
+                  child: Container(
+                    height: size.height / 14,
+                    width: size.width / 1.15,
+                    child: TextField(
+                      controller: _groupName,
+                      decoration: InputDecoration(
+                        hintText: "Enter Group Name",
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: size.height / 50,
+                ),
+                ElevatedButton(
+                  onPressed: createGroup,
+                  child: Text("Create Group"),
+                ),
+              ],
+            ),
+    );
+  }
 }
+
+
 //
