@@ -197,6 +197,52 @@ class ChatRoom extends StatelessWidget {
       alignment: map['sendby'] == _auth.currentUser!.displayName
           ? Alignment.centerRight
           : Alignment.centerLeft,
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 14),
+        margin: EdgeInsets.symmetric(vertical: 5, horizontal: 8),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(15),
+          color: Colors.blue,
+        ),
+        child: Text(
+          map['message'],
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+            color: Colors.white,
+          ),
+        ),
+      ),
+    )
+        : Container(
+      height: size.height / 2.5,
+      width: size.width,
+      padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+      alignment: map['sendby'] == _auth.currentUser!.displayName
+          ? Alignment.centerRight
+          : Alignment.centerLeft,
+      child: InkWell(
+        onTap: () => Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => ShowImage(
+              imageUrl: map['message'],
+            ),
+          ),
+        ),
+        child: Container(
+          height: size.height / 2.5,
+          width: size.width / 2,
+          decoration: BoxDecoration(border: Border.all()),
+          alignment: map['message'] != "" ? null : Alignment.center,
+          child: map['message'] != ""
+              ? Image.network(
+            map['message'],
+            fit: BoxFit.cover,
+          )
+              : CircularProgressIndicator(),
+        ),
+      ),
+    );
   }
 }
 
