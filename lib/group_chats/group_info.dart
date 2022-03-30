@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_app/Screens/HomeScreen.dart';
 
+import 'add_members.dart';
+
 class GroupInfo extends StatefulWidget {
   final String groupId, groupName;
   const GroupInfo({required this.groupId, required this.groupName, Key? key})
@@ -15,17 +17,31 @@ class GroupInfo extends StatefulWidget {
 class _GroupInfoState extends State<GroupInfo> {
   List membersList = [];
   bool isLoading = true;
+
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
   FirebaseAuth _auth = FirebaseAuth.instance;
 
   @override
   void initState() {
     super.initState();
-
+    getGroupDetails();
   }
+
+  Future getGroupDetails() async {
+    await _firestore
+        .collection('groups')
+        .doc(widget.groupId)
+        .get()
+        .then((chatMap) {
+      membersList = chatMap['members'];
+      print(membersList);
+      isLoading = false;
+      setState(() {});
+    });
+  }
+
   bool checkAdmin() {
     bool isAdmin = false;
-
     membersList.forEach((element) {
       if (element['uid'] == _auth.currentUser!.uid) {
         isAdmin = element['isAdmin'];
@@ -34,22 +50,58 @@ class _GroupInfoState extends State<GroupInfo> {
     return isAdmin;
   }
 
+  Future removeMembers(int index) async {
+    String uid = membersList[index]['uid'];
+    setState(() {
+      isLoading = true;
+      membersList.removeAt(index);
+    });
+    await _firestore.collection('groups').doc(widget.groupId).update({
+      "members": membersList,
+    }).then((value) async {
+      await _firestore
+          .collection('users')
+          .doc(uid)
+          .collection('groups')
+          .doc(widget.groupId)
+          .delete();
+
+      setState(() {
+        isLoading = false;
+      });
+    });
+  }
+
+  void showDialogBox(int index) {
+    if (checkAdmin()) {
+      if (_auth.currentUser!.uid != membersList[index]['uid']) {
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                content: ListTile(
+                  onTap: () => removeMembers(index),
+                  title: Text("Remove This Member"),
+                ),
+              );
+            });
+      }
+    }
+  }
+
   Future onLeaveGroup() async {
     if (!checkAdmin()) {
       setState(() {
         isLoading = true;
       });
-
       for (int i = 0; i < membersList.length; i++) {
         if (membersList[i]['uid'] == _auth.currentUser!.uid) {
           membersList.removeAt(i);
         }
       }
-
       await _firestore.collection('groups').doc(widget.groupId).update({
         "members": membersList,
       });
-
       await _firestore
           .collection('users')
           .doc(_auth.currentUser!.uid)
@@ -63,6 +115,7 @@ class _GroupInfoState extends State<GroupInfo> {
       );
     }
   }
+
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
@@ -121,8 +174,6 @@ class _GroupInfoState extends State<GroupInfo> {
                 ),
               ),
 
-              //
-
               SizedBox(
                 height: size.height / 20,
               ),
@@ -142,12 +193,17 @@ class _GroupInfoState extends State<GroupInfo> {
                 height: size.height / 20,
               ),
 
-              // Members Name
-
               checkAdmin()
                   ? ListTile(
-                // navigate
-                onTap: () {},
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => AddMembersINGroup(
+                      groupChatId: widget.groupId,
+                      name: widget.groupName,
+                      membersList: membersList,
+                    ),
+                  ),
+                ),
                 leading: Icon(
                   Icons.add,
                 ),
@@ -168,7 +224,7 @@ class _GroupInfoState extends State<GroupInfo> {
                   physics: NeverScrollableScrollPhysics(),
                   itemBuilder: (context, index) {
                     return ListTile(
-                      onTap: () {},
+                      onTap: () => showDialogBox(index),
                       leading: Icon(Icons.account_circle),
                       title: Text(
                         membersList[index]['name'],
