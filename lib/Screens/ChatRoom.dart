@@ -1,3 +1,7 @@
+
+
+
+
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -74,7 +78,7 @@ class ChatRoom extends StatelessWidget {
     }
   }
 
-   void onSendMessage() async {
+  void onSendMessage() async {
     if (_message.text.isNotEmpty) {
       Map<String, dynamic> messages = {
         "sendby": _auth.currentUser!.displayName,
@@ -202,7 +206,7 @@ class ChatRoom extends StatelessWidget {
         margin: EdgeInsets.symmetric(vertical: 5, horizontal: 8),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15),
-          color: Colors.blue,
+          color: Colors.pink,
         ),
         child: Text(
           map['message'],

@@ -3,9 +3,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_chat_app/Authenticate/Method.dart';
-import 'package:flutter_chat_app/group_chats/group_chat_screen.dart';
-
+import '../Authenticate/Method.dart';
+import '../group_chats/group_chat_screen.dart';
 import 'ChatRoom.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -45,12 +44,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 
   String chatRoomId(String user1, String user2) {
-    if (user1[0].toLowerCase().codeUnits[0] >
-        user2.toLowerCase().codeUnits[0]) {
-      return "$user1$user2";
-    } else {
-      return "$user2$user1";
+    if(user1.toLowerCase().compareTo(user2.toLowerCase()) == -1){
+      return user2+user1;
+    }else{
+      return user1+user2;
     }
+
   }
 
   void onSearch() async {
@@ -167,4 +166,3 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     );
   }
 }
-

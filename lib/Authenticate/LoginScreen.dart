@@ -1,7 +1,9 @@
+
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_chat_app/Screens/HomeScreen.dart';
 
+import '../Screens/HomeScreen.dart';
 import 'CreateAccount.dart';
 import 'Method.dart';
 
@@ -46,10 +48,11 @@ class _LoginScreenState extends State<LoginScreen> {
             Container(
               width: size.width / 1.1,
               child: Text(
-                "Welcome",
+                "Welcome to App Chat",
                 style: TextStyle(
-                  fontSize: 34,
+                  fontSize: 30,
                   fontWeight: FontWeight.bold,
+                  color: Colors.pink
                 ),
               ),
             ),
@@ -88,12 +91,13 @@ class _LoginScreenState extends State<LoginScreen> {
               height: size.height / 40,
             ),
             GestureDetector(
+
               onTap: () => Navigator.of(context).push(
                   MaterialPageRoute(builder: (_) => CreateAccount())),
               child: Text(
                 "Create Account",
                 style: TextStyle(
-                  color: Colors.blue,
+                  color: Colors.pink,
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
                 ),
@@ -104,8 +108,10 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
+
   Widget customButton(Size size) {
     return GestureDetector(
+
       onTap: () {
         if (_email.text.isNotEmpty && _password.text.isNotEmpty) {
           setState(() {
@@ -136,7 +142,7 @@ class _LoginScreenState extends State<LoginScreen> {
           width: size.width / 1.2,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(5),
-            color: Colors.blue,
+            color: Colors.pink,
           ),
           alignment: Alignment.center,
           child: Text(
@@ -149,14 +155,24 @@ class _LoginScreenState extends State<LoginScreen> {
           )),
     );
   }
+
   Widget field(
       Size size, String hintText, IconData icon, TextEditingController cont) {
     return Container(
       height: size.height / 14,
       width: size.width / 1.1,
       child: TextField(
+        controller: cont,
+        decoration: InputDecoration(
+          prefixIcon: Icon(icon),
+          hintText: hintText,
+          hintStyle: TextStyle(color: Colors.grey),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
       ),
     );
   }
+}
 
-}  

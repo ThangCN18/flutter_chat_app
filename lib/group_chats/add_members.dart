@@ -10,6 +10,7 @@ class AddMembersINGroup extends StatefulWidget {
       required this.groupChatId,
       Key? key})
       : super(key: key);
+
   @override
   _AddMembersINGroupState createState() => _AddMembersINGroupState();
 }
@@ -63,14 +64,12 @@ class _AddMembersINGroupState extends State<AddMembersINGroup> {
 
   @override
   Widget build(BuildContext context) {
-    
     final Size size = MediaQuery.of(context).size;
 
     return Scaffold(
       appBar: AppBar(
         title: Text("Add Members"),
       ),
-      
       body: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -125,4 +124,3 @@ class _AddMembersINGroupState extends State<AddMembersINGroup> {
     );
   }
 }
-

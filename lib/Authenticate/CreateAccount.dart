@@ -45,16 +45,17 @@ class _CreateAccountState extends State<CreateAccount> {
             Container(
               width: size.width / 1.1,
               child: Text(
-                "Welcome",
+                "Welcome to App Chat",
                 style: TextStyle(
-                  fontSize: 34,
+                  fontSize: 30,
                   fontWeight: FontWeight.bold,
+                  color: Colors.pink,
                 ),
               ),
             ),
             Container(
               width: size.width / 1.1,
-              child: Text(
+              child:  Text(
                 "Create Account to Contiue!",
                 style: TextStyle(
                   color: Colors.grey[700],
@@ -98,7 +99,7 @@ class _CreateAccountState extends State<CreateAccount> {
                 child: Text(
                   "Login",
                   style: TextStyle(
-                    color: Colors.blue,
+                    color: Colors.pink,
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
                   ),
@@ -145,7 +146,7 @@ class _CreateAccountState extends State<CreateAccount> {
           width: size.width / 1.2,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(5),
-            color: Colors.blue,
+            color: Colors.pink,
           ),
           alignment: Alignment.center,
           child: Text(
@@ -178,5 +179,3 @@ class _CreateAccountState extends State<CreateAccount> {
     );
   }
 }
-
-//done

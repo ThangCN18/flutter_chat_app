@@ -8,10 +8,10 @@ Future main() async {
    await WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: const FirebaseOptions(
-        apiKey: "AIzaSyC0V-6G0Z6J0Uvwgn6vy4wOAcHS-dZV4ME",
-        appId: "1:235504518081:android:e6a3d5ea4bc095c319e540",
-        messagingSenderId: "235504518081",
-        projectId: "flutter-chat-app-c9637")
+        apiKey: "AIzaSyA0Yii1n-HWOm6ASw5ycfLm0dpipOX9rMY",
+        appId: "1:770600412740:android:736d8bff9673ceb0dcbe11",
+        messagingSenderId: "770600412740",
+        projectId: "final-flutter-2-app-chat")
   );
   runApp(MyApp());
 }
@@ -20,10 +20,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        primarySwatch: Colors.pink,
+      ),
       home: Authenticate(),
     );
   }
 }
-
-
 

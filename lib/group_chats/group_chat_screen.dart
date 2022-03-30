@@ -2,6 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import 'create_group/add_members.dart';
+import 'group_chat_room.dart';
+
 class GroupChatHomeScreen extends StatefulWidget {
   const GroupChatHomeScreen({Key? key}) : super(key: key);
 
@@ -19,8 +22,24 @@ class _GroupChatHomeScreenState extends State<GroupChatHomeScreen> {
   @override
   void initState() {
     super.initState();
+    getAvailableGroups();
   }
 
+  void getAvailableGroups() async {
+    String uid = _auth.currentUser!.uid;
+
+    await _firestore
+        .collection('users')
+        .doc(uid)
+        .collection('groups')
+        .get()
+        .then((value) {
+      setState(() {
+        groupList = value.docs;
+        isLoading = false;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +60,14 @@ class _GroupChatHomeScreenState extends State<GroupChatHomeScreen> {
               itemCount: groupList.length,
               itemBuilder: (context, index) {
                 return ListTile(
-                  onTap: (){},
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => GroupChatRoom(
+                        groupName: groupList[index]['name'],
+                        groupChatId: groupList[index]['id'],
+                      ),
+                    ),
+                  ),
                   leading: Icon(Icons.group),
                   title: Text(groupList[index]['name']),
                 );
@@ -49,7 +75,11 @@ class _GroupChatHomeScreenState extends State<GroupChatHomeScreen> {
             ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.create),
-        onPressed: () {},
+        onPressed: () => Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => AddMembersInGroup(),
+          ),
+        ),
         tooltip: "Create Group",
       ),
     );
