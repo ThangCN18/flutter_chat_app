@@ -10,7 +10,6 @@ class AddMembersINGroup extends StatefulWidget {
       required this.groupChatId,
       Key? key})
       : super(key: key);
-
   @override
   _AddMembersINGroupState createState() => _AddMembersINGroupState();
 }
