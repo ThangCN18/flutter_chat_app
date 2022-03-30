@@ -157,7 +157,12 @@ class _LoginScreenState extends State<LoginScreen> {
       child: TextField(
         controller: cont,
         decoration: InputDecoration(
-          
+          prefixIcon: Icon(icon),
+          hintText: hintText,
+          hintStyle: TextStyle(color: Colors.grey),
+          border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          ),
         ),
       ),
     );
