@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class GroupChatRoom extends StatelessWidget {
@@ -7,6 +9,8 @@ class GroupChatRoom extends StatelessWidget {
       : super(key: key);
 
   final TextEditingController _message = TextEditingController();
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   void onSendMessage() async {
     if (_message.text.isNotEmpty) {
@@ -18,6 +22,12 @@ class GroupChatRoom extends StatelessWidget {
       };
 
       _message.clear();
+
+      await _firestore
+          .collection('groups')
+          .doc(groupChatId)
+          .collection('chats')
+          .add(chatData);
     }
   }
 
@@ -48,6 +58,12 @@ class GroupChatRoom extends StatelessWidget {
               height: size.height / 1.27,
               width: size.width,
               child: StreamBuilder<QuerySnapshot>(
+                stream: _firestore
+                    .collection('groups')
+                    .doc(groupChatId)
+                    .collection('chats')
+                    .orderBy('time')
+                    .snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     return ListView.builder(
@@ -109,7 +125,20 @@ class GroupChatRoom extends StatelessWidget {
               )),
         );
       } else if (chatMap['type'] == "img") {
-        return Container();
+        return Container(
+          width: size.width,
+          alignment: chatMap['sendBy'] == _auth.currentUser!.displayName
+              ? Alignment.centerRight
+              : Alignment.centerLeft,
+          child: Container(
+            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 14),
+            margin: EdgeInsets.symmetric(vertical: 5, horizontal: 8),
+            height: size.height / 2,
+            child: Image.network(
+              chatMap['message'],
+            ),
+          ),
+        );
       } else if (chatMap['type'] == "notify") {
         return Container();
       } else {
