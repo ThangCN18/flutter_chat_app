@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
+import 'package:flutter_chat_app/Screens/HomeScreen.dart';
 
 class GroupInfo extends StatefulWidget {
   final String groupId, groupName;
@@ -15,6 +15,7 @@ class GroupInfo extends StatefulWidget {
 class _GroupInfoState extends State<GroupInfo> {
   List membersList = [];
   bool isLoading = true;
+  FirebaseFirestore _firestore = FirebaseFirestore.instance;
   FirebaseAuth _auth = FirebaseAuth.instance;
 
   @override
@@ -33,6 +34,35 @@ class _GroupInfoState extends State<GroupInfo> {
     return isAdmin;
   }
 
+  Future onLeaveGroup() async {
+    if (!checkAdmin()) {
+      setState(() {
+        isLoading = true;
+      });
+
+      for (int i = 0; i < membersList.length; i++) {
+        if (membersList[i]['uid'] == _auth.currentUser!.uid) {
+          membersList.removeAt(i);
+        }
+      }
+
+      await _firestore.collection('groups').doc(widget.groupId).update({
+        "members": membersList,
+      });
+
+      await _firestore
+          .collection('users')
+          .doc(_auth.currentUser!.uid)
+          .collection('groups')
+          .doc(widget.groupId)
+          .delete();
+
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => HomeScreen()),
+            (route) => false,
+      );
+    }
+  }
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
@@ -156,7 +186,7 @@ class _GroupInfoState extends State<GroupInfo> {
               ),
 
               ListTile(
-                onTap: (){},
+                onTap: onLeaveGroup,
                 leading: Icon(
                   Icons.logout,
                   color: Colors.redAccent,
