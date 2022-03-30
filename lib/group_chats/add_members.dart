@@ -28,6 +28,24 @@ class _AddMembersINGroupState extends State<AddMembersINGroup> {
     membersList = widget.membersList;
   }
 
+  void onSearch() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    await _firestore
+        .collection('users')
+        .where("email", isEqualTo: _search.text)
+        .get()
+        .then((value) {
+      setState(() {
+        userMap = value.docs[0].data();
+        isLoading = false;
+      });
+      print(userMap);
+    });
+  }
+
   
 }
 
