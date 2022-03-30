@@ -46,6 +46,21 @@ class _AddMembersINGroupState extends State<AddMembersINGroup> {
     });
   }
 
-  
+  void onAddMembers() async {
+    membersList.add(userMap);
+
+    await _firestore.collection('groups').doc(widget.groupChatId).update({
+      "members": membersList,
+    });
+
+    await _firestore
+        .collection('users')
+        .doc(userMap!['uid'])
+        .collection('groups')
+        .doc(widget.groupChatId)
+        .set({"name": widget.name, "id": widget.groupChatId});
+  }
+
+ 
 }
 
