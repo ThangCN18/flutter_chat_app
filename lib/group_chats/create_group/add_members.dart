@@ -12,6 +12,85 @@ class AddMembersInGroup extends StatefulWidget {
 }
 
 class _AddMembersInGroupState extends State<AddMembersInGroup> {
+
+  final TextEditingController _search = TextEditingController();
+  FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  FirebaseAuth _auth = FirebaseAuth.instance;
+  List<Map<String, dynamic>> membersList = [];
+  bool isLoading = false;
+  Map<String, dynamic>? userMap;
+
+  @override
+  void initState() {
+    super.initState();
+    getCurrentUserDetails();
+  }
+
+  void getCurrentUserDetails() async {
+    await _firestore
+        .collection('users')
+        .doc(_auth.currentUser!.uid)
+        .get()
+        .then((map) {
+      setState(() {
+        membersList.add({
+          "name": map['name'],
+          "email": map['email'],
+          "uid": map['uid'],
+          "isAdmin": true,
+        });
+      });
+    });
+  }
+
+  void onSearch() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    await _firestore
+        .collection('users')
+        .where("email", isEqualTo: _search.text)
+        .get()
+        .then((value) {
+      setState(() {
+        userMap = value.docs[0].data();
+        isLoading = false;
+      });
+      print(userMap);
+    });
+  }
+
+  void onResultTap() {
+    bool isAlreadyExist = false;
+
+    for (int i = 0; i < membersList.length; i++) {
+      if (membersList[i]['uid'] == userMap!['uid']) {
+        isAlreadyExist = true;
+      }
+    }
+
+    if (!isAlreadyExist) {
+      setState(() {
+        membersList.add({
+          "name": userMap!['name'],
+          "email": userMap!['email'],
+          "uid": userMap!['uid'],
+          "isAdmin": false,
+        });
+
+        userMap = null;
+      });
+    }
+  }
+
+  void onRemoveMembers(int index) {
+    if (membersList[index]['uid'] != _auth.currentUser!.uid) {
+      setState(() {
+        membersList.removeAt(index);
+      });
+    }
+  }
   
 
   @override
