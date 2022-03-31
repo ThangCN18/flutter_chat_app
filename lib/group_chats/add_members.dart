@@ -47,18 +47,26 @@ class _AddMembersINGroupState extends State<AddMembersINGroup> {
   }
 
   void onAddMembers() async {
-    membersList.add(userMap);
+        bool isAlreadyExist = false;
 
-    await _firestore.collection('groups').doc(widget.groupChatId).update({
-      "members": membersList,
-    });
+    for (int i = 0; i < membersList.length; i++) {
+      if (membersList[i]['uid'] == userMap!['uid']) {
+        isAlreadyExist = true;
+      }
+    }
 
-    await _firestore
-        .collection('users')
-        .doc(userMap!['uid'])
-        .collection('groups')
-        .doc(widget.groupChatId)
-        .set({"name": widget.name, "id": widget.groupChatId});
+    if (!isAlreadyExist) {
+      setState(() {
+        membersList.add({
+          "name": userMap!['name'],
+          "email": userMap!['email'],
+          "uid": userMap!['uid'],
+          "isAdmin": false,
+        });
+
+        userMap = null;
+      });
+    }
   }
 
   @override
